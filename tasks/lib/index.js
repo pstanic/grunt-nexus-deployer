@@ -103,24 +103,27 @@ var createAndUploadArtifacts = function (options, done) {
     var groupIdAsPath = options.groupId.replace(/\./g, "/");
     var groupArtifactPath = groupIdAsPath + '/' + options.artifactId;
 
-    uploads[pomDir + "/outer.xml"] = groupArtifactPath + '/' + 'maven-metadata.xml';
-    uploads[pomDir + "/outer.xml.sha1"] = groupArtifactPath + '/' + 'maven-metadata.xml.sha1';
-    uploads[pomDir + "/outer.xml.md5"] = groupArtifactPath + '/' + 'maven-metadata.xml.md5';
+	if (!options.excludeMetadata) {
+	    uploads[pomDir + "/outer.xml"] = groupArtifactPath + '/' + 'maven-metadata.xml';
+	    uploads[pomDir + "/outer.xml.sha1"] = groupArtifactPath + '/' + 'maven-metadata.xml.sha1';
+	    uploads[pomDir + "/outer.xml.md5"] = groupArtifactPath + '/' + 'maven-metadata.xml.md5';
+	}
 
     var SNAPSHOT_VER = /.*SNAPSHOT$/i;
 
     var groupArtifactVersionPath = groupArtifactPath + '/' + options.version;
-    if (SNAPSHOT_VER.test(options.version)) {
+    if (!options.excludeMetadata && SNAPSHOT_VER.test(options.version)) {
         uploads[pomDir + "/inner.xml"] = groupArtifactVersionPath + '/' + 'maven-metadata.xml';
         uploads[pomDir + "/inner.xml.sha1"] = groupArtifactVersionPath + '/' + 'maven-metadata.xml.sha1';
         uploads[pomDir + "/inner.xml.md5"] = groupArtifactVersionPath + '/' + 'maven-metadata.xml.md5';
     }
 
     var remoteArtifactName = options.artifactId + '-' + options.version;
-    uploads[pomDir + "/pom.xml"] = groupArtifactVersionPath + '/' + remoteArtifactName + '.pom';
-    uploads[pomDir + "/pom.xml.sha1"] = groupArtifactVersionPath + '/' + remoteArtifactName + '.pom.sha1';
-    uploads[pomDir + "/pom.xml.md5"] = groupArtifactVersionPath + '/' + remoteArtifactName + '.pom.md5';
-
+	if (!options.excludeMetadata) {
+        uploads[pomDir + "/pom.xml"] = groupArtifactVersionPath + '/' + remoteArtifactName + '.pom';
+        uploads[pomDir + "/pom.xml.sha1"] = groupArtifactVersionPath + '/' + remoteArtifactName + '.pom.sha1';
+        uploads[pomDir + "/pom.xml.md5"] = groupArtifactVersionPath + '/' + remoteArtifactName + '.pom.md5';
+    }
 
     if(options.classifier) {
         remoteArtifactName = remoteArtifactName + "-" + options.classifier;
